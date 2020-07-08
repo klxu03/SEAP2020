@@ -25,7 +25,8 @@ class Panel:
                     prev = line[1:]
                 else:
                     panel_dict[panel_compression_counter] = line
-                    print('prev:', prev, 'panel_compression_counter:', panel_compression_counter)
+                    prev = prev.split('\n')[0] # IO adds an extra \n to the end of the prev name
+                    # print('prev:', prev, 'panel_compression_counter:', panel_compression_counter)
                     panel_compression[prev] = panel_compression_counter
                     panel_compression_counter += 1
         sequence_length = len(panel_dict[0])   
@@ -65,7 +66,6 @@ class Panel:
         self.panel_dict = panel_dict
         # panel_compression[sequence name] == sequence index
         self.panel_compression = panel_compression
-        print('In init', panel_compression['HXB2.DG'])
 
     """ Returning the consensus sequence  """
     def get_consensus_sequence(self):
@@ -73,8 +73,5 @@ class Panel:
 
     """ Get a HIV sequence from the panel  """
     def get_seq(self, seq_header):
-        print('Seq_header', seq_header)
-        print(self.panel_compression['HXB2.DG'])
-        # return self.panel_compression[seq_header]
-        # return self.panel_compression[self.panel_dict[seq_header]]
+        return self.panel_dict[self.panel_compression[seq_header]]
 
