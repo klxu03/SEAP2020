@@ -15,6 +15,8 @@ class Panel:
         # Bootstrapped coordinate compression for panel_dict sequence name and its corresponding sequence index
         # panel_compression[sequence name] == sequence index
         panel_compression = {}
+        # Opposite/reverse of panel_compression, opp[seq index] == seq name
+        opposite_panel_compression = {}
 
         """ Inputting and reading the file """
         panel_compression_counter = 0
@@ -28,9 +30,11 @@ class Panel:
                     prev = prev.split('\n')[0] # IO adds an extra \n to the end of the prev name
                     # print('prev:', prev, 'panel_compression_counter:', panel_compression_counter)
                     panel_compression[prev] = panel_compression_counter
+                    opposite_panel_compression[panel_compression_counter] = prev
                     panel_compression_counter += 1
         sequence_length = len(panel_dict[0])   
         self.sequence_length = sequence_length
+        self.panel_compression_counter = panel_compression_counter
 
         f.close()
 
@@ -73,10 +77,16 @@ class Panel:
         return self.consensus_sequence
 
     """ Get a HIV sequence from the panel  """
-    def get_seq(self, seq_header):
+    def get_seq_from_name(self, seq_header):
         return self.panel_dict[self.panel_compression[seq_header]]
+
+    """ Get a HIV sequence from the panel  """
+    def get_seq(self, seq_index):
+        return self.panel_dict[seq_index]
 
     """ Getting the length of each sequence """
     def get_seq_length(self):
         return self.sequence_length
 
+    def get_number_of_seq(self):
+        return self.panel_compression_counter

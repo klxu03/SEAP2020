@@ -55,3 +55,6 @@ class BLOSUM:
 
     def get_panda_matrix(self):
         return self.panda_matrix
+
+    def get_blosum_dict(self):
+        return self.blosum_dict

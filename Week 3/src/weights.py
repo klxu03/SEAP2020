@@ -30,7 +30,7 @@ class Weights:
                 AA_at_an_order[AA_counter] = input[1]
                 AA_counter += 1
 
-        print('AA_counter', AA_counter)
+        # print('AA_counter', AA_counter)
         self.site_dict = site_dict
         self.site_dict_panel_compression = site_dict_panel_compression
         self.AA_at_an_order = AA_at_an_order
