@@ -6,6 +6,7 @@ import math
 from src.pngs import PNGS
 from src.panel import Panel
 from src.blosum import BLOSUM
+from src.pmbec import PMBEC
 from src.weights import Weights
 from src.epitope_dist import get_epitope_distance
 from src.ic50 import IC50
@@ -14,11 +15,13 @@ from src.ic50 import IC50
 rel_panel_path = './files/seap2020/136_panel_with_4lts.fa'
 rel_weight_path = './files/seap2020/vrc01_wts.4lts.txt'
 rel_blosum_path = './files/seap2020/BLOSUM62.txt'
+rel_pmbec_path = './files/seap2020/PMBEC.txt'
 rel_ic50_path = './files/seap2020/vrc01_ic50.txt'
 
 """ Instantiating Each Class """
 panel = Panel(rel_panel_path)
 blosum = BLOSUM(rel_blosum_path)
+pmbec = PMBEC(rel_pmbec_path)
 weights = Weights(rel_weight_path)
 weight_array_modified = np.zeros(panel.get_seq_length())
 ic50 = IC50(rel_ic50_path, (panel.get_number_of_seq() - 2))
@@ -29,7 +32,8 @@ class Main:
         return panel.get_consensus_sequence()
 
     def get_blosum_dict():
-        return blosum.get_blosum_dict()
+        # return blosum.get_blosum_dict()
+        return pmbec.get_blosum_dict()
 
     def get_ic50_weights():
         return ic50.get_ic50_arr()
@@ -57,18 +61,21 @@ def init_weight_array_modified():
             counter += 1
 
 
-def epitope_distance(reference_sequence, blosum_dict, ic50_weights):
+def epitope_distance(reference_sequence, matrix, ic50_weights):
     init_weight_array_modified()
-    print('weight_array_modified', weight_array_modified)
+    # print('weight_array_modified', weight_array_modified)
     panel_ic50 = np.empty((2, (panel.get_number_of_seq() - 2)))  
     for i in range(1, panel.get_number_of_seq() - 1):
         x_seq = panel.get_seq(i)
         # the actual epitope distance calculation value
-        ep_dist = get_epitope_distance(x_seq, x_seq, blosum_dict, weight_array_modified) - get_epitope_distance(x_seq, reference_sequence, blosum_dict, weight_array_modified)
+        ep_dist = get_epitope_distance(x_seq, x_seq, matrix, weight_array_modified, False) - get_epitope_distance(x_seq, reference_sequence, matrix, weight_array_modified, False)
         panel_ic50[0][i - 1] = ep_dist
         panel_ic50[1][i - 1] = ic50_weights[i - 1]
-        if (ic50_weights[i-1] > 1):
+        """ If you want to find out the outliers whose IC50 concentrations are above the maximum, aka the antibody doesn't work and print those values out """
+        """
+        if (ic50_weights[i-1] > 1.5):
             print('ep_dist', ep_dist, 'IC50 Concentration', ic50_weights[i-1], 'i', i)
+        """
         # print(panel_ic50[0][i - 1], panel_ic50[1][i - 1])
 
     return panel_ic50
